@@ -1,0 +1,55 @@
+version: "3"
+services:
+  nginx:
+    image: hatiolab/operato-nginx:latest
+    ports:
+      - ${HostPort}:80
+    networks:
+      ha:
+        ipv4_address: 172.20.127.4
+    depends_on:
+      - app
+  app: 
+    build: .
+    container_name: haproxy
+    image: haproxytech/haproxy-ubuntu:latest
+    privileged: true
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      ha:
+        ipv4_address: 172.20.127.1
+    depends_on:
+      - app_master
+      - app_slave        
+  app_master:
+    build: .
+    container_name: operato-board-master
+    image: hatiolab/operato-board:latest
+    privileged: true
+    volumes:
+      - ./logs:/app/logs
+      - ./config.production.js:/app/config.production.js
+    ports:
+      - 5001:3000
+    networks:
+      ha:
+        ipv4_address: 172.20.127.2
+  app_slave:
+    build: .
+    container_name: operato-board-slave
+    image: hatiolab/operato-board:latest
+    privileged: true
+    volumes:
+      - ./logs:/app/logs
+      - ./config.production.js:/app/config.production.js
+    ports:
+      - 5002:3000
+    networks:
+      ha:
+        ipv4_address: 172.20.127.3
+networks:
+  ha:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
