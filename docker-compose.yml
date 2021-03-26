@@ -1,21 +1,17 @@
 version: "3"
 services:
-  nginx:
-    image: hatiolab/operato-nginx:latest
-    ports:
-      - ${HostPort}:80
-    depends_on:
-      - app
-  app: 
+  app:
     build: .
     container_name: haproxy
     image: haproxytech/haproxy-ubuntu:latest
     privileged: true
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - 5000:3000
     depends_on:
       - app_master
-      - app_slave        
+      - app_slave
   app_master:
     build: .
     container_name: operato-board-master
