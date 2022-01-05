@@ -33,8 +33,6 @@ module.exports = {
      type: 'postgres',
      database: 'board-app',
      username: 'postgres',
-     password: 'hatioLAB1008',
-     host: 'hatiolab-dev-database-1.cluster-cb0sbyfvrh6h.ap-northeast-2.rds.amazonaws.com',
      port: 5432,
      synchronize: true,
      logging: true
